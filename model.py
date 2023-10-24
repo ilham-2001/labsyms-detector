@@ -22,6 +22,7 @@ def im_to_tensor(im):
 def detect_object(im):
     im_arr, detections = im_to_tensor(im)
     dets = np.where(detections["detection_scores"][0] >= .5)[0]
+    is_mask, is_coat, is_gloves = False, False, False
 
     for i in dets:
         ymin, xmin, ymax, xmax = detections["detection_boxes"][0][i]
@@ -37,8 +38,15 @@ def detect_object(im):
                    cv.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 2)
         cv.putText(im_arr, f"Confidence: {score}%", (
             label_pos[0], label_pos[1] + 15), cv.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 2)
+            
+        if label == "coat":
+            is_coat = not is_coat
+        elif label == "mask":
+            is_mask = not is_mask
+        elif label == "gloves":
+            is_gloves = not is_gloves
 
-    return cv.cvtColor(im_arr, cv.COLOR_RGB2BGR)
+    return cv.cvtColor(im_arr, cv.COLOR_RGB2BGR), (is_gloves, is_mask, is_coat)
 
 
 def create_boundingbox(im):

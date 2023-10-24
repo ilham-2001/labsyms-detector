@@ -21,7 +21,10 @@ mqttc.loop_start()
 
 while True:
     _, frame = cam.read()
-    detected_im = detect_object(frame)
+    detected_im, labels = detect_object(frame)
     im64 = encode_image_to_base64(detected_im )
 
+    mqttc.publish("/labsyms/gloves-info", labels[0])
+    mqttc.publish("/labsyms/mask-info", labels[1])
+    mqttc.publish("/labsyms/coat-info", labels[2])
     mqttc.publish("/labsyms/image", im64)
