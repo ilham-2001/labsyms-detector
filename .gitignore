@@ -1,5 +1,4 @@
 __pycache__
 .vscode
-annotations
+assets
 custom_ssd_mobilenet
-exported_models

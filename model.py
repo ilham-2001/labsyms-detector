@@ -23,14 +23,13 @@ def detect_object(im):
     im_arr, detections = im_to_tensor(im)
     dets = np.where(detections["detection_scores"][0] >= .5)[0]
     is_mask, is_coat, is_gloves = False, False, False
-
+    is_satisfied = False
     for i in dets:
         ymin, xmin, ymax, xmax = detections["detection_boxes"][0][i]
         raw_label = int(detections["detection_classes"][0][i].numpy())
         score = np.round(detections["detection_scores"][0][i].numpy() * 100, 1)
         label = CLASSES[raw_label]
-        (left, right, top, bottom) = (
-            xmin*WIDTH, xmax*WIDTH, ymin*HEIGHT, ymax*HEIGHT)
+        (left, right, top, bottom) = (xmin*WIDTH, xmax*WIDTH, ymin*HEIGHT, ymax*HEIGHT)
         cv.rectangle(im_arr, (int(left), int(top)),
                      (int(right), int(bottom)), (0, 255, 0), 2)
         label_pos = (int(left), int(top)-20)
@@ -46,7 +45,10 @@ def detect_object(im):
         elif label == "gloves":
             is_gloves = not is_gloves
 
-    return cv.cvtColor(im_arr, cv.COLOR_RGB2BGR), (is_gloves, is_mask, is_coat)
+    if is_coat and is_mask:
+        is_satisfied = True
+
+    return cv.cvtColor(im_arr, cv.COLOR_RGB2BGR), (is_gloves, is_mask, is_coat, is_satisfied)
 
 
 def create_boundingbox(im):
