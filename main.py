@@ -2,6 +2,7 @@ import cv2 as cv
 import paho.mqtt.client as mqtt
 from encode_decode_image import encode_image_to_base64
 from model import detect_object
+import asyncio
 
 def on_connect(client, userdata, flags, rc):
     print(f"[CONNECTED] with code {rc}")
@@ -29,3 +30,6 @@ while True:
     mqttc.publish("/labsyms/coat-info", labels[2])
     mqttc.publish("/labsyms/enter-info", labels[3])
     mqttc.publish("/labsyms/image", im64)
+
+    if labels[3]:
+        mqttc.publish("/labsyms/image-preview", im64)
